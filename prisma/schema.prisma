@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Website {
+  id          String      @id @default(cuid())
+  name        String
+  url         String
+  type        MonitorType @default(HTTP)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  statusChecks StatusCheck[]
+  
+  @@map("websites")
+}
+
+model StatusCheck {
+  id           String   @id @default(cuid())
+  websiteId    String
+  status       String   // "up" or "down"
+  responseTime Int?     // in milliseconds
+  statusCode   Int?
+  errorMessage String?  @db.Text
+  checkedAt    DateTime @default(now())
+  
+  website Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  
+  @@map("status_checks")
+  @@index([websiteId, checkedAt])
+}
+
+enum MonitorType {
+  HTTP
+  HTTPS
+  PING
+}
