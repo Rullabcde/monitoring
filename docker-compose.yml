@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   app:
@@ -32,7 +32,11 @@ services:
       - db
     networks:
       - my-app-net
-    command: ["echo", "Command runner ready. Use 'docker-compose run' to execute commands."]
+    command:
+      [
+        "echo",
+        "Command runner ready. Use 'docker-compose run' to execute commands.",
+      ]
 
   db:
     image: mysql:8.0
