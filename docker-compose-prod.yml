@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  app:
+    image: rullabcd/monitoring-app:latest
+    container_name: nextjs-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}
+    depends_on:
+      - db
+    networks:
+      - my-app-net
+
+  migrate:
+    image: rullabcd/monitoring-app:latest
+    container_name: migrate-runner
+    entrypoint: ["pnpm", "prisma", "migrate", "deploy"]
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}
+    depends_on:
+      - db
+    networks:
+      - my-app-net
+    profiles: ["tools"]
+
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: siswasiswa
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql-init/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - my-app-net
+
+networks:
+  my-app-net:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
