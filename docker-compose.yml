@@ -19,6 +19,20 @@ services:
     networks:
       - my-app-net
 
+  command-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}
+    depends_on:
+      - db
+    networks:
+      - my-app-net
+    command: ["echo", "Command runner ready. Use 'docker-compose run' to execute commands."]
 
   db:
     image: mysql:8.0
