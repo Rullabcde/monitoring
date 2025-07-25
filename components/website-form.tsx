@@ -1,58 +1,74 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Switch } from "@/components/ui/switch"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
+import type React from "react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 interface Website {
-  id: string
-  name: string
-  url: string
-  type: "HTTP" | "HTTPS" | "PING"
-  isActive: boolean
+  id: string;
+  name: string;
+  url: string;
+  type: "HTTP" | "HTTPS" | "PING";
+  isActive: boolean;
 }
 
 interface WebsiteFormProps {
-  website?: Website
-  onSubmit: (data: { name: string; url: string; type: "HTTP" | "HTTPS" | "PING"; isActive: boolean }) => void
-  onCancel?: () => void
-  isLoading?: boolean
+  website?: Website;
+  onSubmit: (data: {
+    name: string;
+    url: string;
+    type: "HTTP" | "HTTPS" | "PING";
+    isActive: boolean;
+  }) => void;
+  onCancel?: () => void;
+  isLoading?: boolean;
 }
 
-export function WebsiteForm({ website, onSubmit, onCancel, isLoading }: WebsiteFormProps) {
+export function WebsiteForm({
+  website,
+  onSubmit,
+  onCancel,
+  isLoading,
+}: WebsiteFormProps) {
   const [formData, setFormData] = useState({
     name: website?.name || "",
     url: website?.url || "",
     type: website?.type || ("HTTP" as const),
     isActive: website?.isActive ?? true,
-  })
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit(formData)
-  }
+    e.preventDefault();
+    onSubmit(formData);
+  };
 
   const getTypeDescription = (type: string) => {
     switch (type) {
       case "HTTP":
-        return "Monitor HTTP websites"
+        return "Monitor HTTP websites";
       case "HTTPS":
-        return "Monitor HTTPS websites"
+        return "Monitor HTTPS websites";
       case "PING":
-        return "Ping IP addresses or domains"
+        return "Ping IP addresses or domains";
       default:
-        return ""
+        return "";
     }
-  }
+  };
 
   return (
-    <Card className="border-0 shadow-lg">
+    <Card className="border border-border/40 shadow-lg">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2">
           {website ? "Edit Monitor" : "Add New Monitor"}
@@ -71,7 +87,9 @@ export function WebsiteForm({ website, onSubmit, onCancel, isLoading }: WebsiteF
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 placeholder="My Website"
                 required
                 className="h-10"
@@ -84,7 +102,9 @@ export function WebsiteForm({ website, onSubmit, onCancel, isLoading }: WebsiteF
               </Label>
               <Select
                 value={formData.type}
-                onValueChange={(value: "HTTP" | "HTTPS" | "PING") => setFormData({ ...formData, type: value })}
+                onValueChange={(value: "HTTP" | "HTTPS" | "PING") =>
+                  setFormData({ ...formData, type: value })
+                }
               >
                 <SelectTrigger className="h-10">
                   <SelectValue />
@@ -95,7 +115,9 @@ export function WebsiteForm({ website, onSubmit, onCancel, isLoading }: WebsiteF
                   <SelectItem value="PING">PING</SelectItem>
                 </SelectContent>
               </Select>
-              <p className="text-xs text-slate-500">{getTypeDescription(formData.type)}</p>
+              <p className="text-xs text-slate-500">
+                {getTypeDescription(formData.type)}
+              </p>
             </div>
           </div>
 
@@ -106,33 +128,52 @@ export function WebsiteForm({ website, onSubmit, onCancel, isLoading }: WebsiteF
             <Input
               id="url"
               value={formData.url}
-              onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-              placeholder={formData.type === "PING" ? "192.168.1.1 or example.com" : "https://example.com"}
+              onChange={(e) =>
+                setFormData({ ...formData, url: e.target.value })
+              }
+              placeholder={
+                formData.type === "PING"
+                  ? "192.168.1.1 or example.com"
+                  : "https://example.com"
+              }
               required
               className="h-10"
             />
           </div>
 
-          <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+          <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
             <div>
               <Label htmlFor="isActive" className="text-sm font-medium">
                 Active Monitoring
               </Label>
-              <p className="text-xs text-slate-500">Enable automatic monitoring for this target</p>
+              <p className="text-xs text-muted-foreground">
+                Enable automatic monitoring for this target
+              </p>
             </div>
             <Switch
               id="isActive"
               checked={formData.isActive}
-              onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+              onCheckedChange={(checked) =>
+                setFormData({ ...formData, isActive: checked })
+              }
             />
           </div>
 
           <div className="flex gap-3 pt-2">
             <Button type="submit" disabled={isLoading} className="flex-1 h-10">
-              {isLoading ? "Saving..." : website ? "Update Monitor" : "Add Monitor"}
+              {isLoading
+                ? "Saving..."
+                : website
+                ? "Update Monitor"
+                : "Add Monitor"}
             </Button>
             {onCancel && (
-              <Button type="button" variant="outline" onClick={onCancel} className="h-10 bg-transparent">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onCancel}
+                className="h-10 bg-transparent"
+              >
                 Cancel
               </Button>
             )}
@@ -140,5 +181,5 @@ export function WebsiteForm({ website, onSubmit, onCancel, isLoading }: WebsiteF
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }

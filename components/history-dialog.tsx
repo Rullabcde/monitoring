@@ -1,75 +1,101 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Activity } from "lucide-react";
 
 interface StatusCheck {
-  id: string
-  status: string
-  responseTime: number | null
-  statusCode: number | null
-  errorMessage: string | null
-  checkedAt: string
+  id: string;
+  status: string;
+  responseTime: number | null;
+  statusCode: number | null;
+  errorMessage: string | null;
+  checkedAt: string;
 }
 
 interface Website {
-  id: string
-  name: string
-  url: string
+  id: string;
+  name: string;
+  url: string;
 }
 
 interface HistoryDialogProps {
-  website: Website | null
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  website: Website | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function HistoryDialog({ website, open, onOpenChange }: HistoryDialogProps) {
-  const [history, setHistory] = useState<StatusCheck[]>([])
-  const [loading, setLoading] = useState(false)
+export function HistoryDialog({
+  website,
+  open,
+  onOpenChange,
+}: HistoryDialogProps) {
+  const [history, setHistory] = useState<StatusCheck[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (website && open) {
-      fetchHistory()
+      fetchHistory();
     }
-  }, [website, open])
+  }, [website, open]);
 
   const fetchHistory = async () => {
-    if (!website) return
+    if (!website) return;
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await fetch(`/api/websites/${website.id}/history`)
+      const response = await fetch(`/api/websites/${website.id}/history`);
       if (response.ok) {
-        const data = await response.json()
-        setHistory(data)
+        const data = await response.json();
+        setHistory(data);
       }
     } catch (error) {
-      console.error("Failed to fetch history:", error)
+      console.error("Failed to fetch history:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString()
-  }
+    return new Date(dateString).toLocaleString();
+  };
 
   const getStatusBadge = (status: string) => {
-    return <Badge variant={status === "up" ? "default" : "destructive"}>{status.toUpperCase()}</Badge>
-  }
+    return (
+      <Badge variant={status === "up" ? "default" : "destructive"}>
+        {status.toUpperCase()}
+      </Badge>
+    );
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto border border-border/40">
         <DialogHeader>
           <DialogTitle>History for {website?.name}</DialogTitle>
         </DialogHeader>
 
         {loading ? (
-          <div className="text-center py-8">Loading history...</div>
+          <div className="text-center py-8 text-muted-foreground">
+            <div className="flex justify-center mb-2">
+              <Activity className="h-5 w-5 animate-spin" />
+            </div>
+            Loading history...
+          </div>
         ) : (
           <Table>
             <TableHeader>
@@ -85,9 +111,13 @@ export function HistoryDialog({ website, open, onOpenChange }: HistoryDialogProp
               {history.map((check) => (
                 <TableRow key={check.id}>
                   <TableCell>{getStatusBadge(check.status)}</TableCell>
-                  <TableCell>{check.responseTime ? `${check.responseTime}ms` : "-"}</TableCell>
+                  <TableCell>
+                    {check.responseTime ? `${check.responseTime}ms` : "-"}
+                  </TableCell>
                   <TableCell>{check.statusCode || "-"}</TableCell>
-                  <TableCell className="max-w-xs truncate">{check.errorMessage || "-"}</TableCell>
+                  <TableCell className="max-w-xs truncate">
+                    {check.errorMessage || "-"}
+                  </TableCell>
                   <TableCell>{formatDate(check.checkedAt)}</TableCell>
                 </TableRow>
               ))}
@@ -96,9 +126,11 @@ export function HistoryDialog({ website, open, onOpenChange }: HistoryDialogProp
         )}
 
         {!loading && history.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">No history data available</div>
+          <div className="text-center py-8 text-muted-foreground">
+            No history data available
+          </div>
         )}
       </DialogContent>
     </Dialog>
-  )
+  );
 }
