@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { WebsiteForm } from "@/components/website-form";
+import { WebsiteFormModal } from "@/components/website-form-modal";
 import { WebsiteList } from "@/components/website-list";
 import { HistoryDialog } from "@/components/history-dialog";
 import { Header } from "@/components/header";
@@ -15,6 +15,7 @@ import {
   Globe,
   Wifi,
   TrendingUp,
+  Zap,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -36,7 +37,7 @@ interface Website {
 
 function DashboardContent() {
   const [websites, setWebsites] = useState<Website[]>([]);
-  const [showForm, setShowForm] = useState(false);
+  const [showFormModal, setShowFormModal] = useState(false);
   const [editingWebsite, setEditingWebsite] = useState<Website | null>(null);
   const [historyWebsite, setHistoryWebsite] = useState<Website | null>(null);
   const [loading, setLoading] = useState(false);
@@ -52,8 +53,8 @@ function DashboardContent() {
   useEffect(() => {
     // Show a welcome toast when the dashboard loads
     toast({
-      title: "Welcome to Website Monitor",
-      description: "Your monitoring dashboard is ready.",
+      title: "🚀 Welcome to Website Monitor",
+      description: "Your monitoring dashboard is ready and running!",
     });
   }, [toast]);
 
@@ -90,12 +91,12 @@ function DashboardContent() {
 
       if (response.ok) {
         toast({
-          title: editingWebsite ? "Monitor updated" : "Monitor added",
+          title: editingWebsite ? "✅ Monitor Updated!" : "🎉 Monitor Added!",
           description: `${data.name} has been ${
             editingWebsite ? "updated" : "added"
           } successfully.`,
         });
-        setShowForm(false);
+        setShowFormModal(false);
         setEditingWebsite(null);
         fetchWebsites();
       } else {
@@ -103,7 +104,7 @@ function DashboardContent() {
       }
     } catch (error) {
       toast({
-        title: "Error",
+        title: "❌ Error",
         description: "Failed to save monitor. Please try again.",
         variant: "destructive",
       });
@@ -120,7 +121,7 @@ function DashboardContent() {
 
       if (response.ok) {
         toast({
-          title: "Monitor deleted",
+          title: "🗑️ Monitor Deleted",
           description: "Monitor has been deleted successfully.",
         });
         fetchWebsites();
@@ -129,7 +130,7 @@ function DashboardContent() {
       }
     } catch (error) {
       toast({
-        title: "Error",
+        title: "❌ Error",
         description: "Failed to delete monitor. Please try again.",
         variant: "destructive",
       });
@@ -149,7 +150,7 @@ function DashboardContent() {
 
       if (response.ok) {
         toast({
-          title: isActive ? "Monitoring enabled" : "Monitoring paused",
+          title: isActive ? "▶️ Monitoring Enabled" : "⏸️ Monitoring Paused",
           description: `${website.name} monitoring has been ${
             isActive ? "enabled" : "paused"
           }.`,
@@ -160,7 +161,7 @@ function DashboardContent() {
       }
     } catch (error) {
       toast({
-        title: "Error",
+        title: "❌ Error",
         description: "Failed to update monitor. Please try again.",
         variant: "destructive",
       });
@@ -181,8 +182,8 @@ function DashboardContent() {
 
       if (response.ok) {
         toast({
-          title: "Check completed",
-          description: `${website.name} has been checked.`,
+          title: "🔍 Check Completed",
+          description: `${website.name} has been checked successfully.`,
         });
         fetchWebsites();
       } else {
@@ -190,7 +191,7 @@ function DashboardContent() {
       }
     } catch (error) {
       toast({
-        title: "Error",
+        title: "❌ Error",
         description: "Failed to check monitor. Please try again.",
         variant: "destructive",
       });
@@ -207,7 +208,7 @@ function DashboardContent() {
       if (response.ok) {
         const result = await response.json();
         toast({
-          title: "Monitoring completed",
+          title: "🔄 Monitoring Completed",
           description: result.message,
         });
         fetchWebsites();
@@ -216,7 +217,7 @@ function DashboardContent() {
       }
     } catch (error) {
       toast({
-        title: "Error",
+        title: "❌ Error",
         description: "Failed to run monitoring. Please try again.",
         variant: "destructive",
       });
@@ -256,14 +257,16 @@ function DashboardContent() {
   const stats = getOverallStats();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-green-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <Header />
 
       <div className="container mx-auto p-6 space-y-8">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900">Dashboard</h2>
-            <p className="text-slate-600">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+              Dashboard
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400">
               Monitor your websites and servers in real-time
             </p>
           </div>
@@ -272,14 +275,17 @@ function DashboardContent() {
               variant="outline"
               onClick={handleMonitorAll}
               disabled={monitoring}
-              className="h-10 bg-transparent"
+              className="h-11 bg-white/80 dark:bg-slate-800/80 border-blue-200 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-slate-700"
             >
               <RefreshCw
                 className={`h-4 w-4 mr-2 ${monitoring ? "animate-spin" : ""}`}
               />
               {monitoring ? "Checking..." : "Check All"}
             </Button>
-            <Button onClick={() => setShowForm(true)} className="h-10">
+            <Button
+              onClick={() => setShowFormModal(true)}
+              className="h-11 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white shadow-lg"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Monitor
             </Button>
@@ -288,91 +294,92 @@ function DashboardContent() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card className="border border-border/40 shadow-sm overflow-hidden">
+          <Card className="border-0 shadow-lg bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">
                 Total Monitors
               </CardTitle>
-              <Activity className="h-4 w-4 text-muted-foreground" />
+              <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                <Activity className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.total}</div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                {stats.total}
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 {stats.active} active
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border border-border/40 shadow-sm overflow-hidden">
+          <Card className="border-0 shadow-lg bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">
                 Online
               </CardTitle>
-              <Globe className="h-4 w-4 text-green-500" />
+              <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                <Globe className="h-4 w-4 text-green-600 dark:text-green-400" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-500">
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                 {stats.up}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Services running
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border border-border/40 shadow-sm overflow-hidden">
+          <Card className="border-0 shadow-lg bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">
                 Offline
               </CardTitle>
-              <Wifi className="h-4 w-4 text-destructive" />
+              <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                <Wifi className="h-4 w-4 text-red-600 dark:text-red-400" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-destructive">
+              <div className="text-2xl font-bold text-red-600 dark:text-red-400">
                 {stats.down}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Services down
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border border-border/40 shadow-sm overflow-hidden">
+          <Card className="border-0 shadow-lg bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">
                 Avg Response
               </CardTitle>
-              <TrendingUp className="h-4 w-4 text-primary" />
+              <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                <TrendingUp className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">
+              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                 {stats.avgResponseTime}ms
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Response time
               </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Form */}
-        {showForm && (
-          <WebsiteForm
-            website={editingWebsite}
-            onSubmit={handleSubmit}
-            onCancel={() => {
-              setShowForm(false);
-              setEditingWebsite(null);
-            }}
-            isLoading={loading}
-          />
-        )}
-
         {/* Website List */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-slate-900">Monitors</h3>
-            <div className="text-sm text-slate-500">
+            <h3 className="text-xl font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+              <Zap className="h-5 w-5 text-blue-600" />
+              Monitors
+            </h3>
+            <div className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
               Auto-refresh every 10 seconds
             </div>
           </div>
@@ -381,7 +388,7 @@ function DashboardContent() {
             websites={websites}
             onEdit={(website) => {
               setEditingWebsite(website);
-              setShowForm(true);
+              setShowFormModal(true);
             }}
             onDelete={handleDelete}
             onToggleActive={handleToggleActive}
@@ -389,6 +396,15 @@ function DashboardContent() {
             onCheckNow={handleCheckNow}
           />
         </div>
+
+        {/* Form Modal */}
+        <WebsiteFormModal
+          open={showFormModal}
+          onOpenChange={setShowFormModal}
+          website={editingWebsite}
+          onSubmit={handleSubmit}
+          isLoading={loading}
+        />
 
         {/* History Dialog */}
         <HistoryDialog

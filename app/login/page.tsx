@@ -14,7 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Shield, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { Zap, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function LoginPage() {
@@ -97,10 +97,14 @@ export default function LoginPage() {
   // Show loading if checking session
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-background/80">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-green-50 to-blue-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="text-center">
-          <Shield className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
-          <p className="text-muted-foreground">Checking authentication...</p>
+          <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <Zap className="h-6 w-6 text-white animate-pulse" />
+          </div>
+          <p className="text-slate-600 dark:text-slate-400">
+            Checking authentication...
+          </p>
         </div>
       </div>
     );
@@ -112,17 +116,17 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-background/80 p-4">
-      <Card className="w-full max-w-md shadow-xl border border-border/40">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-green-50 to-blue-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-4">
+      <Card className="w-full max-w-md shadow-2xl border-0 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm">
         <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
-            <Shield className="h-6 w-6 text-white" />
+          <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-600 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <Zap className="h-8 w-8 text-white" />
           </div>
           <div>
-            <CardTitle className="text-2xl font-bold">
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
               Website Monitor
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-slate-600 dark:text-slate-400">
               Sign in to access the monitoring dashboard
             </CardDescription>
           </div>
@@ -130,14 +134,20 @@ export default function LoginPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <Alert variant="destructive">
+              <Alert
+                variant="destructive"
+                className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
+              >
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="username" className="text-sm font-medium">
+              <Label
+                htmlFor="username"
+                className="text-sm font-medium text-slate-700 dark:text-slate-300"
+              >
                 Username
               </Label>
               <Input
@@ -149,13 +159,16 @@ export default function LoginPage() {
                 }
                 placeholder="Enter your username"
                 required
-                className="h-11"
+                className="h-11 bg-white/80 dark:bg-slate-700/80 border-slate-200 dark:border-slate-600"
                 autoComplete="username"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium">
+              <Label
+                htmlFor="password"
+                className="text-sm font-medium text-slate-700 dark:text-slate-300"
+              >
                 Password
               </Label>
               <div className="relative">
@@ -168,7 +181,7 @@ export default function LoginPage() {
                   }
                   placeholder="Enter your password"
                   required
-                  className="h-11 pr-10"
+                  className="h-11 pr-10 bg-white/80 dark:bg-slate-700/80 border-slate-200 dark:border-slate-600"
                   autoComplete="current-password"
                 />
                 <Button
@@ -187,8 +200,22 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <Button type="submit" className="w-full h-11" disabled={loading}>
-              {loading ? "Signing in..." : "Sign In"}
+            <Button
+              type="submit"
+              className="w-full h-11 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white shadow-lg"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Zap className="h-4 w-4 mr-2 animate-pulse" />
+                  Signing in...
+                </>
+              ) : (
+                <>
+                  <Zap className="h-4 w-4 mr-2" />
+                  Sign In
+                </>
+              )}
             </Button>
           </form>
         </CardContent>
